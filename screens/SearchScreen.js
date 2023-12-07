@@ -6,6 +6,7 @@ import {
     FlatList,
     StyleSheet,
     TextInput,
+    TouchableHighlight
 } from "react-native";
 
 function SearchScreen() {
@@ -15,6 +16,7 @@ function SearchScreen() {
     useEffect(() => {
         const fetchStocks = async () => {
             try {
+                // mover isso para uma classe separada igual o projeto anterior
                 const response = await axios.get(
                     `https://aij1hx90oj.execute-api.ap-southeast-2.amazonaws.com/prod/all`,
                     {
@@ -73,10 +75,15 @@ function SearchScreen() {
                     data={filteredStocks}
                     keyExtractor={(item) => item["symbol"]}
                     renderItem={({item}) => (
-                        <View style={styles.item}>
-                            <Text style={styles.symbolText}>{item.symbol}</Text>
-                            <Text style={styles.nameText}>{item.name}</Text>
-                        </View>
+                        <TouchableHighlight
+                            activeOpacity={0.6}
+                            onPress={() => alert('Pressed! ' + item.symbol)}
+                        >
+                            <View style={styles.item}>
+                                <Text style={styles.symbolText}>{item.symbol}</Text>
+                                <Text style={styles.nameText}>{item.name}</Text>
+                            </View>
+                        </TouchableHighlight>
                     )}
                 />
             ) : (
@@ -94,7 +101,6 @@ export default SearchScreen;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         backgroundColor: "#202020",
         color: "#F0FFFF",
         fontSize: 16,
@@ -112,7 +118,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         width: "100%",
         color: "#fff",
-        flex: 1,
     },
     item: {
         flex: 1,
