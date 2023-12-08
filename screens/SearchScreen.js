@@ -8,6 +8,7 @@ import {
     TextInput,
     TouchableHighlight
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function SearchScreen() {
     const [stocks, setStocks] = useState([]);
@@ -60,6 +61,24 @@ function SearchScreen() {
             }
         });
 
+    const addStockToWatchList = async (stock) => {
+        try {
+            const watchlist =
+                JSON.parse(await AsyncStorage.getItem("watchlist")) || [];
+            if(!watchlist.some((item) => item.symbol === stock.symbol)) {
+                watchlist.push(stock);
+                await AsyncStorage.setItem("watchlist", JSON.stringify(watchlist));
+                Alert.alert(`${stock.symbol} is added to your watchlist`);
+                console.log("Stock already in watchlist:", stock);
+            } else {
+                Alert.alert(`${stock.symbol} is already in your watchlist`);
+            }
+        } catch(error) {
+            console.error("Failed to add stock to watchlist", error);
+            Alert.alert("Error encountered, try again");
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.container}>
@@ -77,7 +96,7 @@ function SearchScreen() {
                     renderItem={({item}) => (
                         <TouchableHighlight
                             activeOpacity={0.6}
-                            onPress={() => alert('Pressed! ' + item.symbol)}
+                            onPress={() => addStockToWatchList(item)}
                         >
                             <View style={styles.item}>
                                 <Text style={styles.symbolText}>{item.symbol}</Text>
@@ -101,6 +120,7 @@ export default SearchScreen;
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         backgroundColor: "#202020",
         color: "#F0FFFF",
         fontSize: 16,
