@@ -9,6 +9,8 @@ import {
     TouchableHighlight
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function SearchScreen() {
     const [stocks, setStocks] = useState([]);
@@ -68,16 +70,17 @@ function SearchScreen() {
             if(!watchlist.some((item) => item.symbol === stock.symbol)) {
                 watchlist.push(stock);
                 await AsyncStorage.setItem("watchlist", JSON.stringify(watchlist));
-                Alert.alert(`${stock.symbol} is added to your watchlist`);
+                toast(`${stock.symbol} is added to your watchlist`);
                 console.log("Stock already in watchlist:", stock);
             } else {
-                Alert.alert(`${stock.symbol} is already in your watchlist`);
+                toast(`${stock.symbol} is already in your watchlist`);
             }
         } catch(error) {
             console.error("Failed to add stock to watchlist", error);
-            Alert.alert("Error encountered, try again");
+            toast("Error encountered, try again");
         }
     };
+
 
     return (
         <View style={styles.container}>
@@ -112,6 +115,9 @@ function SearchScreen() {
                     </Text>
                 </View>
             )}
+            <div>
+                <ToastContainer position="bottom-center" autoClose={3000} hideProgressBar={true}/>
+            </div>
         </View>
     );
 }
@@ -120,7 +126,7 @@ export default SearchScreen;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: "initial",
         backgroundColor: "#202020",
         color: "#F0FFFF",
         fontSize: 16,
