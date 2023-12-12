@@ -1,37 +1,23 @@
 import React, {useState} from "react";
 import {useFocusEffect} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {Swipeable} from "react-native-gesture-handler";
-import Icon from "react-native-vector-icons/Ionicons";
-
-import {
-    View,
-    Text,
-    FlatList,
-    StyleSheet,
-    Button,
-    Alert,
-    TouchableHighlight,
-} from "react-native";
+import { BottomSheet, Button } from '@rneui/themed';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {call} from "../api/APIClient";
+import { View,Text,FlatList,StyleSheet,TouchableHighlight} from "react-native";
 
 function WatchListScreen({navigation}) {
     const [watchlist, setWatchlist] = useState([]);
+    const [isVisible, setIsVisible] = useState(false);
+    const [selectedStock, setSelectedStock] = useState(null);
 
     useFocusEffect(
         React.useCallback(() => {
             const fetchWatchlist = async () => {
                 try {
-                    const storedWatchlist =
-                        JSON.parse(await AsyncStorage.getItem("watchlist")) || [];
-                    setWatchlist(storedWatchlist);
-                    const hasShownAlert = await AsyncStorage.getItem("hasShownAlert");
-                    if(!hasShownAlert) {
-                        Alert.alert(
-                            "Tip",
-                            "Swipe a stock to the right to remove it from your watchlist."
-                        );
-                        await AsyncStorage.setItem("hasShownAlert", "true");
-                    }
+                    const storedWatchlist = JSON.parse(await AsyncStorage.getItem("watchlist")) || [];
+                    const listWithDetails = await loadDetails(storedWatchlist)
+                    setWatchlist(listWithDetails);
                 } catch(error) {
                     console.error("Failed to fetch watchlist", error);
                 }
@@ -41,17 +27,32 @@ function WatchListScreen({navigation}) {
     );
 
     return (
-        <View style={styles.container}>
+        <SafeAreaProvider>
             <View style={styles.container}>
                 {watchlist.length > 0 ? (
                     <FlatList
                         data={watchlist}
                         keyExtractor={(item) => item.symbol}
                         renderItem={({item}) => (
-                            <SwipeableRow
-                                item={item}
-                                navigator={navigation}
-                            />
+                            <TouchableHighlight
+                                onPress={() => {
+                                        setSelectedStock(item)
+                                        setIsVisible(true)
+                                    }
+                            }
+                            >
+                                <View style={styles.item}>
+                                    <Text style={styles.symbolText}>
+                                        {item.symbol}
+                                    </Text>
+                                    <Text style={styles.symbolText}>
+                                        {item.close}
+                                    </Text>
+                                    <Text style={styles.symbolText}>
+                                        {item.open}
+                                    </Text>
+                                </View>
+                            </TouchableHighlight>
                         )}
                     />
                 ) : (
@@ -75,35 +76,30 @@ function WatchListScreen({navigation}) {
                     </View>
                 )}
             </View>
-        </View>
-    );
-}
-
-function SwipeableRow({item, onDelete, navigator}) {
-    const renderRightActions = () => {
-        return (
-            <TouchableHighlight onPress={() => onDelete(item)}>
-                <View style={styles.deleteBox}>
-                    <Icon name="trash-outline" size={20} color="#FFF" />
-                </View>
-            </TouchableHighlight>
-        );
-    };
-
-    return (
-        <Swipeable renderRightActions={renderRightActions}>
-            <TouchableHighlight
-                onPress={() =>
-                    navigator.navigate("StockDetails", {symbol: item.symbol})
-                }
-            >
-                <View style={styles.item}>
-                    <Text style={styles.symbolText}>
-                        {item.symbol}
-                    </Text>
-                </View>
-            </TouchableHighlight>
-        </Swipeable>
+            <BottomSheet modalProps={{}} isVisible={isVisible} >
+                <Text style={styles.bottomSheetItem}>       
+                    {selectedStock != null ? (
+                        selectedStock.symbol
+                    ) : ( "" )
+                    }
+                </Text>
+                <Text style={styles.bottomSheetItem}>       
+                    {selectedStock != null ? (
+                        selectedStock.symbol
+                    ) : ( "" )
+                    }
+                </Text>
+                <div style={styles.bottomButton}>
+                    <Button
+                        title="Close"
+                        onPress={() => {
+                            setIsVisible(false)
+                            setSelectedStock(null)
+                        }}
+                    />
+                </div>
+            </BottomSheet>
+        </SafeAreaProvider>
     );
 }
 
@@ -121,39 +117,6 @@ const styles = StyleSheet.create({
         borderBottomColor: "#808080",
         borderBottomWidth: 1,
     },
-    WatchListScreenContainer: {
-        flex: 1,
-        margin: 20,
-    },
-    header: {
-        marginTop: 50,
-        fontSize: 24,
-        fontWeight: "bold",
-        alignSelf: "flex-start",
-    },
-    button: {
-        backgroundColor: "blue",
-        padding: 10,
-        borderRadius: 2,
-        backgroundColor: "#508bd4",
-        marginTop: 10,
-        alignItems: "center",
-    },
-    textButton: {
-        padding: 10,
-        borderRadius: 2,
-        marginTop: 10,
-        alignItems: "center",
-    },
-    buttonText: {
-        fontWeight: "bold",
-    },
-    error: {
-        color: "red",
-        fontSize: 12,
-        marginVertical: 5,
-        alignSelf: "flex-start",
-    },
     item: {
         flex: 1,
         flexDirection: "column",
@@ -165,25 +128,33 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 16,
     },
-    nameText: {
-        flex: 6,
-        flexDirection: "row",
-        color: "#F0FFFF",
-        fontSize: 16,
-    },
     message: {
         fontSize: 18,
         color: "#F0FFFF",
         textAlign: "center",
         marginTop: 20,
     },
-    deleteBox: {
-        backgroundColor: "red",
+    bottomSheetItem: {
+        backgroundColor: "white",
         justifyContent: "center",
         alignItems: "center",
-        width: 100,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        flex: 1
     },
-    deleteText: {
-        color: "#FFF",
+    bottomButton: {
+        marginVertical: 10,
+        marginHorizontal: 10,
+        flex: 0
     },
 });
+
+
+async function loadDetails(watchList){
+    return await Promise.all(
+        watchList.map(async (stock) => {
+            const response = await call(`history?symbol=` + stock.symbol);
+            return await response.data[0];
+        })
+      );
+}

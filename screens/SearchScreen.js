@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from "react";
-import axios from "axios";
 import {
     View,
     Text,
@@ -11,6 +10,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {call} from "../api/APIClient";
 
 function SearchScreen() {
     const [stocks, setStocks] = useState([]);
@@ -19,15 +19,7 @@ function SearchScreen() {
     useEffect(() => {
         const fetchStocks = async () => {
             try {
-                // mover isso para uma classe separada igual o projeto anterior
-                const response = await axios.get(
-                    `https://aij1hx90oj.execute-api.ap-southeast-2.amazonaws.com/prod/all`,
-                    {
-                        headers: {
-                            "x-api-key": "1oeViSb1Ke71OdGDjnuVF2G8pYJbOmtb313DyxUL",
-                        }
-                    }
-                );
+                const response = await call("all");
                 const data = response.data;
                 const companies = data.map((company) => {
                     return {
