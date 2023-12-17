@@ -8,7 +8,7 @@ import {
     TouchableHighlight
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ToastContainer, toast } from 'react-toastify';
+import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {call} from "../api/APIClient";
 
@@ -108,7 +108,7 @@ function SearchScreen() {
                 </View>
             )}
             <div>
-                <ToastContainer position="top-center" autoClose={3000} hideProgressBar={true}/>
+                <ToastContainer position="bottom-center" autoClose={3000} hideProgressBar={true} />
             </div>
         </View>
     );

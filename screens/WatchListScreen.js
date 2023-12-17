@@ -34,8 +34,8 @@ function WatchListScreen({navigation}) {
                         data={watchlist}
                         keyExtractor={(item) => item.symbol}
                         ItemSeparatorComponent={() => (
-                            <View style={{ backgroundColor: "white", height: 1 }} />
-                          )}
+                            <View style={{backgroundColor: "white", height: 1}} />
+                        )}
                         renderItem={({item}) => (
                             <TouchableHighlight
                                 onPress={() => {
@@ -51,9 +51,9 @@ function WatchListScreen({navigation}) {
                                     <Text style={styles.amountText}>
                                         {item.close}
                                     </Text>
-                                    <DiffView item={item}/>
+                                    <DiffView item={item} />
                                 </View>
-                                
+
                             </TouchableHighlight>
                         )}
                     />
@@ -95,8 +95,8 @@ function WatchListScreen({navigation}) {
                     </Text>
                     <Text style={styles.bottomSheetItemText}>
                         {selectedStock != null ? (
-                                selectedStock.open
-                            ) : ("")
+                            selectedStock.open
+                        ) : ("")
                         }
                     </Text>
                     <Text style={styles.bottomSheetItemTitle}>
@@ -104,8 +104,8 @@ function WatchListScreen({navigation}) {
                     </Text>
                     <Text style={styles.bottomSheetItemText}>
                         {selectedStock != null ? (
-                                selectedStock.low
-                            ) : ("")
+                            selectedStock.low
+                        ) : ("")
                         }
                     </Text>
                 </View>
@@ -121,8 +121,8 @@ function WatchListScreen({navigation}) {
                     </Text>
                     <Text style={styles.bottomSheetItemText}>
                         {selectedStock != null ? (
-                                selectedStock.close
-                            ) : ("")
+                            selectedStock.close
+                        ) : ("")
                         }
                     </Text>
                     <Text style={styles.bottomSheetItemTitle}>
@@ -130,8 +130,8 @@ function WatchListScreen({navigation}) {
                     </Text>
                     <Text style={styles.bottomSheetItemText}>
                         {selectedStock != null ? (
-                                selectedStock.high
-                            ) : ("")
+                            selectedStock.high
+                        ) : ("")
                         }
                     </Text>
                 </View>
@@ -147,12 +147,12 @@ function WatchListScreen({navigation}) {
                     </Text>
                     <Text style={styles.bottomSheetItemText}>
                         {selectedStock != null ? (
-                                selectedStock.volumes
-                            ) : ("")
+                            selectedStock.volumes
+                        ) : ("")
                         }
                     </Text>
-                    <Text style={styles.bottomSheetItemTitle}/>
-                    <Text style={styles.bottomSheetItemText}/>
+                    <Text style={styles.bottomSheetItemTitle} />
+                    <Text style={styles.bottomSheetItemText} />
                 </View>
                 <div style={styles.bottomButton}>
                     <Button
@@ -168,14 +168,14 @@ function WatchListScreen({navigation}) {
     );
 }
 
-function DiffView({item}){
+function DiffView({item}) {
     // improve it to add background
-    if(item.open <= item.close) { 
-        return ( 
+    if(item.open <= item.close) {
+        return (
             <Text style={styles.diffPositiveText}>{item.diff}</Text>
         )
-    }else{
-        return ( 
+    } else {
+        return (
             <Text style={styles.diffNegativeText}>{item.diff}</Text>
         )
     }
@@ -218,14 +218,14 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: "right",
         width: "20%",
-        
+
     },
     diffNegativeText: {
         color: "#FF0000",
         fontSize: 16,
         textAlign: "right",
         width: "20%",
-        
+
     },
     message: {
         fontSize: 18,
@@ -288,5 +288,5 @@ async function loadDetails(watchList) {
 
 
 function calculateDiff(close, open) {
-    return  ( open<close ? "-" + (((close - open) * 100) / open).toFixed(2) : (((open - close) * 100) / close).toFixed(2) ) + "%";
-   }
+    return (open < close ? "-" + (((close - open) * 100) / open).toFixed(2) : (((open - close) * 100) / close).toFixed(2)) + "%";
+}
