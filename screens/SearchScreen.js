@@ -108,7 +108,7 @@ function SearchScreen() {
                 </View>
             )}
             <div>
-                <ToastContainer position="bottom-center" autoClose={3000} hideProgressBar={true}/>
+                <ToastContainer position="top-center" autoClose={3000} hideProgressBar={true}/>
             </div>
         </View>
     );
